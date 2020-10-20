@@ -3,7 +3,7 @@
 const faunadb = require("faunadb"),
   q = faunadb.query;
 
-module.exports.hello = async event => {
+module.exports.createByText = async event => {
   const client = new faunadb.Client({
     secret: process.env.FAUNA_KEY,
     domain: "localhost",
@@ -12,10 +12,13 @@ module.exports.hello = async event => {
   });
 
   const res = await client.query(
-    q.Map(
-      q.Paginate(q.Collections()),
-      q.Lambda(x => q.Get(x))
-    )
+    q.Create(q.Collection("activity-log"), {
+      data: {
+        timestamp: Date.now(),
+        activity: event.activity,
+        duration: event.duration
+      }
+    })
   );
 
   return {
