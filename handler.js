@@ -4,13 +4,18 @@ const faunadb = require("faunadb"),
   q = faunadb.query;
 
 module.exports.createByText = async event => {
-  // Instantiate client to write to FaunaDB
-  const client = new faunadb.Client({
+  let clientParams = {
     secret: process.env.FAUNA_KEY,
-    domain: "localhost",
-    scheme: "http",
-    port: 8443
-  });
+    domain: process.env.FAUNA_HTTP_DOMAIN,
+    scheme: process.env.FAUNA_HTTP_SCHEME
+  };
+
+  if (process.env.STAGE_ENV === "development") {
+    clientParams.port = 8443;
+  }
+
+  // Instantiate client to write to FaunaDB
+  const client = new faunadb.Client(clientParams);
 
   // Parse values from SMS string using RegEx
   const regex = new RegExp(

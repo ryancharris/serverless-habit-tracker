@@ -12,7 +12,11 @@ provider:
   region: us-east-1
   environment:
     FAUNA_KEY: ${env:FAUNA_KEY}
+    FAUNA_HTTP_DOMAIN: ${env:FAUNA_HTTP_DOMAIN}
+    FAUNA_HTTP_SCHEME: ${env:FAUNA_HTTP_SCHEME}
 
 functions:
   createByText:
     handler: handler.createByText
+    environment:
+      STAGE_ENV: ${self:provider.stage}
