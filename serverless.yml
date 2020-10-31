@@ -18,5 +18,10 @@ provider:
 functions:
   createByText:
     handler: handler.createByText
+    events:
+      - http:
+          path: habit/create
+          method: post
+          cors: true
     environment:
       STAGE_ENV: ${self:provider.stage}
