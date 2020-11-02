@@ -3,8 +3,8 @@
 const faunadb = require("faunadb"),
   q = faunadb.query;
 
-module.exports.createByText = async event => {
-  console.log(event);
+module.exports.createByText = async (event, context, callback) => {
+  const { message, from } = JSON.parse(event.body);
   let clientParams = {
     secret: process.env.FAUNA_KEY,
     domain: process.env.FAUNA_HTTP_DOMAIN,
@@ -20,23 +20,36 @@ module.exports.createByText = async event => {
 
   // Parse values from SMS string using RegEx
   const parsedMessageArr = /(?<qty>[0-9\.]+)\s+(?<unit>[a-zA-Z]+).?\s+#(?<task>\w+)/gim.exec(
-    event
+    message
   );
   const { qty, unit, task } = parsedMessageArr.groups;
 
   // Write parsed SMS values to FaunaDB
-  const res = await client.query(
-    q.Create(q.Collection("log"), {
-      data: {
-        qty: qty,
-        task: task,
-        unit: unit
-      }
+  return await client
+    .query(
+      q.Create(q.Collection("log"), {
+        data: {
+          from: from,
+          qty: qty,
+          task: task,
+          unit: unit
+        }
+      })
+    )
+    .then(res => {
+      JSON.stringify({
+        statusCode: 200,
+        body: res
+      });
     })
-  );
-
-  return {
-    statusCode: 200,
-    body: res
-  };
+    .catch(err => {
+      JSON.stringify({
+        statusCode: err.requestResult.statusCode,
+        body: {
+          name: err.name,
+          message: err.message,
+          description: err.description
+        }
+      });
+    });
 };
