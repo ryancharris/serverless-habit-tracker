@@ -37,19 +37,19 @@ module.exports.createByText = async (event, context, callback) => {
       })
     )
     .then(res => {
-      JSON.stringify({
+      return {
         statusCode: 200,
-        body: res
-      });
+        body: JSON.stringify(res)
+      };
     })
     .catch(err => {
-      JSON.stringify({
+      return {
         statusCode: err.requestResult.statusCode,
-        body: {
+        body: JSON.stringinfy({
           name: err.name,
           message: err.message,
           description: err.description
-        }
-      });
+        })
+      };
     });
 };
