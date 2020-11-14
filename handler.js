@@ -3,7 +3,7 @@
 const faunadb = require("faunadb"),
   q = faunadb.query;
 
-module.exports.createByText = async (event, context, callback) => {
+module.exports.createByText = async event => {
   const { message, from } = JSON.parse(event.body);
   let clientParams = {
     secret: process.env.FAUNA_KEY,
